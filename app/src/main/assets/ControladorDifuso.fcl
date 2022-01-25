@@ -1,0 +1,58 @@
+FUNCTION_BLOCK ventilador
+
+VAR_INPUT
+    temperatura : REAL;
+    humedad: REAL;
+END_VAR
+
+VAR_OUTPUT
+    velocidad : REAL;
+END_VAR
+
+FUZZIFY temperatura
+    TERM congelada:= trian 0 3 7;
+    TERM fria:= (6, 0) (10.5, 1) (15, 0);
+    TERM tibia:= trape 13 14 21 23;
+    TERM caliente:=  (22, 0) (25, 1) (37, 0);
+END_FUZZIFY
+
+FUZZIFY humedad
+    TERM seco:= trian 0 3 7;
+    TERM humedo:= trian 4 12 20;
+    TERM muy_humedo:= trian 18 22 30;
+END_FUZZIFY
+
+DEFUZZIFY velocidad
+    TERM lento:= (1, 0) (24, 1) (48, 0);
+    TERM medio:= (43, 0) (87, 1) (133, 0);
+    TERM rapido:= trape 123 143 153 173;
+
+    METHOD:COG;
+    DEFAULT:=0;
+END_DEFUZZIFY
+
+RULEBLOCK Reglas
+
+    AND:MIN;
+    ACT:MIN;
+    ACCU:MAX;
+
+    RULE Regla1: IF temperatura is congelada AND humedad IS seco THEN velocidad IS lento;
+    RULE Regla2: IF temperatura is fria AND humedad IS seco THEN velocidad IS lento;
+    RULE Regla3: IF temperatura is tibia AND humedad IS seco THEN velocidad IS medio;
+    RULE Regla4: IF temperatura is caliente AND humedad IS seco THEN velocidad IS rapido;
+
+    RULE Regla5: IF temperatura is congelada AND humedad IS humedo THEN velocidad IS lento;
+    RULE Regla6: IF temperatura is fria AND humedad IS humedo THEN velocidad IS lento;
+    RULE Regla7: IF temperatura is tibia AND humedad IS humedo THEN velocidad IS medio;
+    RULE Regla8: IF temperatura is caliente AND humedad IS humedo THEN velocidad IS rapido;
+
+    RULE Regla9: IF temperatura is congelada AND humedad IS muy_humedo THEN velocidad IS lento;
+    RULE Regla10: IF temperatura is fria AND humedad IS muy_humedo THEN velocidad IS lento;
+    RULE Regla11: IF temperatura is tibia AND humedad IS muy_humedo THEN velocidad IS medio;
+    RULE Regla12: IF temperatura is caliente AND humedad IS muy_humedo THEN velocidad IS rapido;
+
+END_RULEBLOCK
+
+
+END_FUNCTION_BLOCK
