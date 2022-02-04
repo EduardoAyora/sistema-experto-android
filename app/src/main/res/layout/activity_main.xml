@@ -17,17 +17,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/valorDefusificado" />
 
-    <Button
-        android:id="@+id/btnCargar"
-        android:layout_width="106dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="60dp"
-        android:text="Cargar "
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtHumedad" />
-
     <SeekBar
         android:id="@+id/seekBar"
         style="@style/Widget.AppCompat.SeekBar.Discrete"
@@ -44,27 +33,13 @@
         android:id="@+id/valorDefusificado"
         android:layout_width="217dp"
         android:layout_height="40dp"
-        android:layout_marginTop="34dp"
         android:text="La velocidad es 0"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/seekBar2" />
-
-    <SeekBar
-        android:id="@+id/seekBar2"
-        style="@style/Widget.AppCompat.SeekBar.Discrete"
-        android:layout_width="103dp"
-        android:layout_height="17dp"
-        android:layout_marginTop="15dp"
-        android:max="10"
-        android:progress="3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/seekBar" />
+        tools:layout_editor_absoluteY="184dp" />
 
     <TextView
-        android:id="@+id/txtHumedad"
+        android:id="@+id/DegreeTV"
         android:layout_width="214dp"
         android:layout_height="44dp"
         android:layout_marginTop="16dp"
