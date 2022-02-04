@@ -1,31 +1,33 @@
 FUNCTION_BLOCK ventilador
 
 VAR_INPUT
-    temperatura : REAL;
-    humedad: REAL;
+    grados : REAL;
 END_VAR
 
 VAR_OUTPUT
-    velocidad : REAL;
+    direccion : REAL;
 END_VAR
 
-FUZZIFY temperatura
-    TERM congelada:= trian 0 3 7;
-    TERM fria:= (6, 0) (10.5, 1) (15, 0);
-    TERM tibia:= trape 13 14 21 23;
-    TERM caliente:=  (22, 0) (25, 1) (37, 0);
+FUZZIFY grados
+    TERM primercuadranteuno:= trape 0 0 44 44;
+    TERM primercuadrantedos:= trape 45 45 89 89;
+    TERM segundocuadranteuno:= trape 90 90 134 134;
+    TERM segundocuadrantedos:= trape 135 135 179 179;
+    TERM tercercuadranteuno:= trape 180 180 224 224;
+    TERM tercercuadrantedos:= trape 225 225 269 269;
+    TERM cuartocuadranteuno:= trape 270 270 314 314;
+    TERM cuartocuadrantedos:= trape 315 315 359 359;
 END_FUZZIFY
 
-FUZZIFY humedad
-    TERM seco:= trian 0 3 7;
-    TERM humedo:= trian 4 12 20;
-    TERM muy_humedo:= trian 18 22 30;
-END_FUZZIFY
-
-DEFUZZIFY velocidad
-    TERM lento:= (1, 0) (24, 1) (48, 0);
-    TERM medio:= (43, 0) (87, 1) (133, 0);
-    TERM rapido:= trape 123 143 153 173;
+DEFUZZIFY direccion
+    TERM n:= (0,1) (30, 0) (330, 0) (360, 1);
+    TERM ne:= trian 15 45 75;
+    TERM e:= trian 60 90 120;
+    TERM se:= trian 105 135 165;
+    TERM s:= trian 150 180 210;
+    TERM so:= trian 195 225 255;
+    TERM o:= trian 240 270 300;
+    TERM no:= trian 285 315 345;
 
     METHOD:COG;
     DEFAULT:=0;
@@ -37,20 +39,14 @@ RULEBLOCK Reglas
     ACT:MIN;
     ACCU:MAX;
 
-    RULE Regla1: IF temperatura is congelada AND humedad IS seco THEN velocidad IS lento;
-    RULE Regla2: IF temperatura is fria AND humedad IS seco THEN velocidad IS lento;
-    RULE Regla3: IF temperatura is tibia AND humedad IS seco THEN velocidad IS medio;
-    RULE Regla4: IF temperatura is caliente AND humedad IS seco THEN velocidad IS rapido;
-
-    RULE Regla5: IF temperatura is congelada AND humedad IS humedo THEN velocidad IS lento;
-    RULE Regla6: IF temperatura is fria AND humedad IS humedo THEN velocidad IS lento;
-    RULE Regla7: IF temperatura is tibia AND humedad IS humedo THEN velocidad IS medio;
-    RULE Regla8: IF temperatura is caliente AND humedad IS humedo THEN velocidad IS rapido;
-
-    RULE Regla9: IF temperatura is congelada AND humedad IS muy_humedo THEN velocidad IS lento;
-    RULE Regla10: IF temperatura is fria AND humedad IS muy_humedo THEN velocidad IS lento;
-    RULE Regla11: IF temperatura is tibia AND humedad IS muy_humedo THEN velocidad IS medio;
-    RULE Regla12: IF temperatura is caliente AND humedad IS muy_humedo THEN velocidad IS rapido;
+    RULE Regla1: IF grados is primercuadranteuno OR grados is cuartocuadrantedos THEN direccion IS n;
+    RULE Regla2: IF grados is primercuadrantedos OR grados is primercuadranteuno THEN direccion IS ne;
+    RULE Regla3: IF grados is segundocuadranteuno OR grados is primercuadrantedos THEN direccion IS e;
+    RULE Regla4: IF grados is segundocuadrantedos OR grados is segundocuadranteuno THEN direccion IS se;
+    RULE Regla5: IF grados is tercercuadranteuno OR grados is segundocuadrantedos THEN direccion IS s;
+    RULE Regla6: IF grados is tercercuadrantedos OR grados is tercercuadranteuno THEN direccion IS so;
+    RULE Regla7: IF grados is cuartocuadranteuno OR grados is tercercuadrantedos THEN direccion IS o;
+    RULE Regla8: IF grados is cuartocuadrantedos OR grados is cuartocuadranteuno THEN direccion IS no;
 
 END_RULEBLOCK
 

@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-
         if (sensor == null) {
             Toast.makeText(this, "El dispositivo no tiene aceletometro", Toast.LENGTH_SHORT).show();
             finish();
@@ -47,10 +46,12 @@ public class MainActivity extends AppCompatActivity {
             public void onSensorChanged(SensorEvent sensorEvent) {
                 float x = sensorEvent.values[0];
                 if(x<-5 && whip==0){
-                    System.out.println("valor giro" + x);
+                    System.out.println("giro coordenada x: " + x);
+                    System.out.println("giro coordenada y: " + sensorEvent.values[1]);
+                    System.out.println("giro coordenada z: " + sensorEvent.values[2]);
                     whip++;
                     getWindow().getDecorView().setBackgroundColor(Color.BLUE);
-                }else if(x>5 && whip==1){
+                }else if(x>5 && whip==1) {
                     whip++;
                     getWindow().getDecorView().setBackgroundColor(Color.RED);
                 }
@@ -88,11 +89,12 @@ public class MainActivity extends AppCompatActivity {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                txtSeekBar.setText("La temperatura es: "+seekBar.getProgress());
-                _FIS.setVariable("temperatura", seekBar.getProgress());
+                txtSeekBar.setText("Los grados son: "+seekBar.getProgress());
+                _FIS.setVariable("grados", seekBar.getProgress());
+                //_FIS.setVariable("grados", seekBar.getProgress());
                 _FIS.evaluate();
-                double res = _FIS.getFunctionBlock(null).getVariable("velocidad").getLatestDefuzzifiedValue();
-                txtVelocidad.setText("La velocidad es: "+res);
+                double res = _FIS.getFunctionBlock(null).getVariable("direccion").getLatestDefuzzifiedValue();
+                txtVelocidad.setText("La direccion es: " + res);
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -104,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        seekBar2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        /*seekBar2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 txtHumedad.setText("La humedad es: "+seekBar2.getProgress());
@@ -141,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-        });
+        });*/
 
 
     }
@@ -165,16 +167,4 @@ public class MainActivity extends AppCompatActivity {
         start();
         super.onResume();
     }
-
-    //@Override
-    //protected void onResume() {
-    //    super.onResume();
-    //    sensorManager.registerListener(gyroscopeEventListener, gyroscopeSensor, SensorManager.SENSOR_DELAY_FASTEST);
-    //}
-
-    //@Override
-    //protected void onPause() {
-    //    super.onPause();
-    //    sensorManager.unregisterListener(gyroscopeEventListener);
-    //}
 }

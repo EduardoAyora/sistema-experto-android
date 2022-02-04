@@ -34,7 +34,7 @@
         android:layout_width="111dp"
         android:layout_height="49dp"
         android:layout_marginTop="69dp"
-        android:max="10"
+        android:max="360"
         android:progress="3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
