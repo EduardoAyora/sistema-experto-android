@@ -1,12 +1,15 @@
 package ups.com.sistems_difuso_android;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.widget.Toast;
 
 import net.sourceforge.jFuzzyLogic.FIS;
@@ -33,6 +36,10 @@ public class MainActivity extends AppCompatActivity {
     private float[] floatOrientation = new float[3];
     private float[] floatRotationMatrix = new float[9];
 
+    private int seconds;
+    private long timeLeftInMilliseconds = 16000;
+    private CountDownTimer conCountDownTimer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,10 +53,13 @@ public class MainActivity extends AppCompatActivity {
         txtVelocidad = this.findViewById(R.id.valorDefusificado);
         txtDireccionPedida = this.findViewById(R.id.txtDireccionPedida);
         txtPuntuacion = this.findViewById(R.id.txtPuntos);
+
         direccionPedida = getRandomDirection();
         txtDireccionPedida.setText("Apunta al " + direccionPedida);
         puntos = 0;
         txtPuntuacion.setText("Puntuación: " + puntos);
+
+        startTimer();
 
         try {
             java.io.InputStream flujo = getAssets().open("ControladorDifuso.fcl");
@@ -76,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                 _FIS.setVariable("grados", gradosEnteros);
                 _FIS.evaluate();
                 int res = (int)_FIS.getFunctionBlock(null).getVariable("direccion").getLatestDefuzzifiedValue();
-                txtVelocidad.setText("La direccion es: " + res);
+                //txtVelocidad.setText("La direccion es: " + res);
 
                 String direccionApuntada = "";
                 if (res == 114) {
@@ -138,6 +148,33 @@ public class MainActivity extends AppCompatActivity {
         String[] direcciones = {"Sur", "Sureste", "Este", "Noreste", "Norte", "Noroeste", "Oeste", "Suroeste"};
         int indiceRandom = new Random().nextInt(direcciones.length);
         return direcciones[indiceRandom];
+    }
+
+    public void startTimer(){
+        conCountDownTimer = new CountDownTimer(timeLeftInMilliseconds, 1000) {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+            @Override
+            public void onTick(long l) {
+                timeLeftInMilliseconds = l;
+                updateTimer();
+            }
+
+            @Override
+            public void onFinish() {
+            }
+
+        }.start();
+        //timerRunning=true;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public void updateTimer(){
+        seconds = (int) timeLeftInMilliseconds % 60000 / 1000;
+        String timeLeftText;
+        timeLeftText = "";
+        timeLeftText += seconds;
+        txtVelocidad.setText(timeLeftText);
+        //timerRunning=false;
     }
 
 }
