@@ -2,15 +2,11 @@ package ups.com.sistems_difuso_android;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import net.sourceforge.jFuzzyLogic.FIS;
@@ -19,8 +15,10 @@ import java.util.Random;
 
 
 public class MainActivity extends AppCompatActivity {
-    private android.widget.TextView txtSeekBar;
+    private android.widget.TextView txtGrados;
     private android.widget.TextView txtVelocidad;
+    private android.widget.TextView txtDireccionPedida;
+    private android.widget.TextView txtPuntuacion;
     private FIS _FIS;
 
     private SensorManager sensorManager;
@@ -44,11 +42,14 @@ public class MainActivity extends AppCompatActivity {
         sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorMagneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
-        txtSeekBar = this.findViewById(R.id.txtSeekBar);
+        txtGrados = this.findViewById(R.id.txtGrados);
         txtVelocidad = this.findViewById(R.id.valorDefusificado);
+        txtDireccionPedida = this.findViewById(R.id.txtDireccionPedida);
+        txtPuntuacion = this.findViewById(R.id.txtPuntos);
         direccionPedida = getRandomDirection();
-        System.out.println("Direccion pedida: " + direccionPedida);
+        txtDireccionPedida.setText("Apunta al " + direccionPedida);
         puntos = 0;
+        txtPuntuacion.setText("Puntuación: " + puntos);
 
         try {
             java.io.InputStream flujo = getAssets().open("ControladorDifuso.fcl");
@@ -70,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
                 float grados = (float)(-floatOrientation[0]*180/3.14159);
                 int gradosEnteros = (int)grados + 180;
-                txtSeekBar.setText(gradosEnteros + "°");
+                txtGrados.setText(gradosEnteros + "°");
 
                 _FIS.setVariable("grados", gradosEnteros);
                 _FIS.evaluate();
@@ -107,7 +108,8 @@ public class MainActivity extends AppCompatActivity {
                     puntos += 1;
                     System.out.println("Puntos: " + puntos);
                     direccionPedida = getRandomDirection();
-                    System.out.println("Direccion pedida: " + direccionPedida);
+                    txtDireccionPedida.setText("Apunta al " + direccionPedida);
+                    txtPuntuacion.setText("Puntuación: " + puntos);
                 }
             }
 
