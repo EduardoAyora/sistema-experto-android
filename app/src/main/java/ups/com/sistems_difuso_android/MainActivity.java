@@ -12,8 +12,17 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
 import net.sourceforge.jFuzzyLogic.FIS;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 
@@ -32,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
     private String direccionPedida;
     private int puntos;
     private boolean isGameOver;
+    private int direccionApuntadaGrados;
+    private String direccionApuntadaTexto;
 
     private float[] floatGravity = new float[3];
     private float[] floatGeoMagnetic = new float[3];
@@ -42,11 +53,14 @@ public class MainActivity extends AppCompatActivity {
     private int seconds;
     private long timeLeftInMilliseconds = 16000;
     private CountDownTimer conCountDownTimer;
+    RequestQueue MyRequestQueue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        MyRequestQueue = Volley.newRequestQueue(this);
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -73,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
             _FIS = FIS.load(flujo, true);
 
-        }catch(Exception e){
+        } catch(Exception e){
             Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
@@ -88,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
                 float grados = (float)(-floatOrientation[0]*180/3.14159);
                 int gradosEnteros = (int)grados + 180;
+                direccionApuntadaGrados = gradosEnteros;
                 txtGrados.setText(gradosEnteros + "°");
 
                 _FIS.setVariable("grados", gradosEnteros);
@@ -120,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
                 if (res == 243) {
                     direccionApuntada = "Suroeste";
                 }
+                direccionApuntadaTexto = direccionApuntada;
 
                 if (direccionApuntada == direccionPedida) {
                     puntos += 1;
@@ -172,7 +188,31 @@ public class MainActivity extends AppCompatActivity {
             public void onTick(long l) {
                 timeLeftInMilliseconds = l;
                 updateTimer();
+
+
+                String url = "http://192.168.1.4:3000/direccion";
+                StringRequest MyStringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        //This code is executed if the server responds, whether or not the response contains data.
+                        //The String 'response' contains the server's response.
+                    }
+                }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                }) {
+                    protected Map<String, String> getParams() {
+                        Map<String, String> MyData = new HashMap<String, String>();
+                        MyData.put("grados", Integer.toString(direccionApuntadaGrados));
+                        MyData.put("direccion", direccionApuntadaTexto);
+                        return MyData;
+                    }
+                };
+                MyRequestQueue.add(MyStringRequest);
             }
+
 
             @Override
             public void onFinish() {
