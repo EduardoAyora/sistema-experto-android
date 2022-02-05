@@ -15,26 +15,40 @@ import android.widget.Toast;
 
 import net.sourceforge.jFuzzyLogic.FIS;
 
+import java.util.Random;
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener {
+
+public class MainActivity extends AppCompatActivity {
     private android.widget.TextView txtSeekBar;
     private android.widget.TextView txtVelocidad;
-    private android.widget.TextView DegreeTV;
-    private android.widget.SeekBar seekBar;
     private FIS _FIS;
 
-    private SensorManager SensorManage;
-    private float DegreeStart = 0f;
+    private SensorManager sensorManager;
+    private Sensor sensorAccelerometer;
+    private Sensor sensorMagneticField;
+    private String direccionPedida;
+    private int puntos;
+
+    private float[] floatGravity = new float[3];
+    private float[] floatGeoMagnetic = new float[3];
+
+    private float[] floatOrientation = new float[3];
+    private float[] floatRotationMatrix = new float[9];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        sensorMagneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+
         txtSeekBar = this.findViewById(R.id.txtSeekBar);
         txtVelocidad = this.findViewById(R.id.valorDefusificado);
-
-        seekBar = this.findViewById(R.id.seekBar);
+        direccionPedida = getRandomDirection();
+        System.out.println("Direccion pedida: " + direccionPedida);
+        puntos = 0;
 
         try {
             java.io.InputStream flujo = getAssets().open("ControladorDifuso.fcl");
@@ -46,54 +60,82 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             e.printStackTrace();
         }
 
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        SensorEventListener sensorEventListenerAccelrometer = new SensorEventListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                txtSeekBar.setText("Los grados son: "+seekBar.getProgress());
-                _FIS.setVariable("grados", seekBar.getProgress());
-                //_FIS.setVariable("grados", seekBar.getProgress());
+            public void onSensorChanged(SensorEvent event) {
+                floatGravity = event.values;
+
+                SensorManager.getRotationMatrix(floatRotationMatrix, null, floatGravity, floatGeoMagnetic);
+                SensorManager.getOrientation(floatRotationMatrix, floatOrientation);
+
+                float grados = (float)(-floatOrientation[0]*180/3.14159);
+                int gradosEnteros = (int)grados + 180;
+                txtSeekBar.setText(gradosEnteros + "°");
+
+                _FIS.setVariable("grados", gradosEnteros);
                 _FIS.evaluate();
-                double res = _FIS.getFunctionBlock(null).getVariable("direccion").getLatestDefuzzifiedValue();
+                int res = (int)_FIS.getFunctionBlock(null).getVariable("direccion").getLatestDefuzzifiedValue();
                 txtVelocidad.setText("La direccion es: " + res);
+
+                String direccionApuntada = "";
+                if (res == 114) {
+                    direccionApuntada = "Sur";
+                }
+                if (res == 67) {
+                    direccionApuntada = "Sureste";
+                }
+                if (res == 112) {
+                    direccionApuntada = "Este";
+                }
+                if (res == 157) {
+                    direccionApuntada = "Noreste";
+                }
+                if (res == 202) {
+                    direccionApuntada = "Norte";
+                }
+                if (res == 247) {
+                    direccionApuntada = "Noroeste";
+                }
+                if (res == 292) {
+                    direccionApuntada = "Oeste";
+                }
+                if (res == 243) {
+                    direccionApuntada = "Suroeste";
+                }
+
+                if (direccionApuntada == direccionPedida) {
+                    puntos += 1;
+                    System.out.println("Puntos: " + puntos);
+                    direccionPedida = getRandomDirection();
+                    System.out.println("Direccion pedida: " + direccionPedida);
+                }
             }
+
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
             }
+        };
+        sensorManager.registerListener(sensorEventListenerAccelrometer, sensorAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+
+        SensorEventListener sensorEventListenerMagneticField = new SensorEventListener() {
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
+            public void onSensorChanged(SensorEvent event) {
+                floatGeoMagnetic = event.values;
+                SensorManager.getRotationMatrix(floatRotationMatrix, null, floatGravity, floatGeoMagnetic);
+                SensorManager.getOrientation(floatRotationMatrix, floatOrientation);
             }
-        });
 
-        DegreeTV = (TextView) findViewById(R.id.DegreeTV);
-        // initialize your android device sensor capabilities
-        SensorManage = (SensorManager) getSystemService(SENSOR_SERVICE);
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+            }
+        };
+        sensorManager.registerListener(sensorEventListenerMagneticField, sensorMagneticField, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        // to stop the listener and save battery
-        SensorManage.unregisterListener(this);
+    public String getRandomDirection() {
+        String[] direcciones = {"Sur", "Sureste", "Este", "Noreste", "Norte", "Noroeste", "Oeste", "Suroeste"};
+        int indiceRandom = new Random().nextInt(direcciones.length);
+        return direcciones[indiceRandom];
     }
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // code for system's orientation sensor registered listeners
-        SensorManage.registerListener(this, SensorManage.getDefaultSensor(Sensor.TYPE_ORIENTATION),
-                SensorManager.SENSOR_DELAY_GAME);
-    }
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        // get angle around the z-axis rotated
-        float degree = Math.round(event.values[0]);
-        DegreeTV.setText("Heading: " + Float.toString(degree) + " degrees");
-        // rotation animation - reverse turn degree degrees
-        DegreeStart = -degree;
-    }
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // not in use
-    }
+
 }

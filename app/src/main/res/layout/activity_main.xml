@@ -17,18 +17,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/valorDefusificado" />
 
-    <SeekBar
-        android:id="@+id/seekBar"
-        style="@style/Widget.AppCompat.SeekBar.Discrete"
-        android:layout_width="111dp"
-        android:layout_height="49dp"
-        android:layout_marginTop="69dp"
-        android:max="360"
-        android:progress="3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <TextView
         android:id="@+id/valorDefusificado"
         android:layout_width="217dp"
@@ -37,16 +25,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteY="184dp" />
-
-    <TextView
-        android:id="@+id/DegreeTV"
-        android:layout_width="214dp"
-        android:layout_height="44dp"
-        android:layout_marginTop="16dp"
-        android:text="La humedad es 0"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtSeekBar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
