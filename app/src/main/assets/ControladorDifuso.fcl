@@ -20,14 +20,14 @@ FUZZIFY grados
 END_FUZZIFY
 
 DEFUZZIFY direccion
-    TERM n:= (0,1) (30, 0) (330, 0) (360, 1);
-    TERM ne:= trian 15 45 75;
-    TERM e:= trian 60 90 120;
-    TERM se:= trian 105 135 165;
-    TERM s:= trian 150 180 210;
-    TERM so:= trian 195 225 255;
-    TERM o:= trian 240 270 300;
-    TERM no:= trian 285 315 345;
+    TERM n:= (0,1) (30, 1) (30, 0) (330, 0) (330, 1) (360, 1);
+    TERM ne:= trape 15 15 75 75;
+    TERM e:= trape 60 60 120 120;
+    TERM se:= trape 105 105 165 165;
+    TERM s:= trape 150 150 210 210;
+    TERM so:= trape 195 195 255 255;
+    TERM o:= trape 240 240 300 300;
+    TERM no:= trape 285 285 345 345;
 
     METHOD:COG;
     DEFAULT:=0;

@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
                 txtVelocidad.setText("La direccion es: " + res);
 
                 String direccionApuntada = "";
-                if (res == 114) {
+                if (res == 124) {
                     direccionApuntada = "Sur";
                 }
                 if (res == 67) {
@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
                 if (res == 292) {
                     direccionApuntada = "Oeste";
                 }
-                if (res == 243) {
+                if (res == 233) {
                     direccionApuntada = "Suroeste";
                 }
                 direccionApuntadaTexto = direccionApuntada;
