@@ -22,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
     private android.widget.TextView txtVelocidad;
     private android.widget.TextView txtDireccionPedida;
     private android.widget.TextView txtPuntuacion;
+    private android.widget.TextView txtGameOver;
+    private android.widget.TextView txtTimer;
     private FIS _FIS;
 
     private SensorManager sensorManager;
@@ -29,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private Sensor sensorMagneticField;
     private String direccionPedida;
     private int puntos;
+    private boolean isGameOver;
 
     private float[] floatGravity = new float[3];
     private float[] floatGeoMagnetic = new float[3];
@@ -53,11 +56,15 @@ public class MainActivity extends AppCompatActivity {
         txtVelocidad = this.findViewById(R.id.valorDefusificado);
         txtDireccionPedida = this.findViewById(R.id.txtDireccionPedida);
         txtPuntuacion = this.findViewById(R.id.txtPuntos);
+        txtTimer = this.findViewById(R.id.txtTimer);
+        txtGameOver = this.findViewById(R.id.txtGameOver);
 
         direccionPedida = getRandomDirection();
         txtDireccionPedida.setText("Apunta al " + direccionPedida);
         puntos = 0;
         txtPuntuacion.setText("Puntuación: " + puntos);
+        isGameOver = false;
+        txtGameOver.setText("");
 
         startTimer();
 
@@ -86,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                 _FIS.setVariable("grados", gradosEnteros);
                 _FIS.evaluate();
                 int res = (int)_FIS.getFunctionBlock(null).getVariable("direccion").getLatestDefuzzifiedValue();
-                //txtVelocidad.setText("La direccion es: " + res);
+                txtVelocidad.setText("La direccion es: " + res);
 
                 String direccionApuntada = "";
                 if (res == 114) {
@@ -120,6 +127,14 @@ public class MainActivity extends AppCompatActivity {
                     direccionPedida = getRandomDirection();
                     txtDireccionPedida.setText("Apunta al " + direccionPedida);
                     txtPuntuacion.setText("Puntuación: " + puntos);
+                }
+
+                if (isGameOver == true) {
+                    txtGrados.setText("");
+                    txtVelocidad.setText("");
+                    txtPuntuacion.setText("");
+                    txtTimer.setText("");
+                    txtDireccionPedida.setText("");
                 }
             }
 
@@ -161,6 +176,24 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
+                System.out.println("El timer termino!!");
+                boolean isOver = isGameOver;
+                if(isOver == false) {
+                    isGameOver = true;
+                    txtGameOver.setText("Tu puntuación fué: " + puntos);
+                    timeLeftInMilliseconds = 8000;
+                    startTimer();
+                }
+                else {
+                    isGameOver = false;
+                    txtGameOver.setText("");
+                    timeLeftInMilliseconds = 16000;
+                    direccionPedida = getRandomDirection();
+                    txtDireccionPedida.setText("Apunta al " + direccionPedida);
+                    puntos = 0;
+                    txtPuntuacion.setText("Puntuación: " + puntos);
+                    startTimer();
+                }
             }
 
         }.start();
@@ -173,7 +206,9 @@ public class MainActivity extends AppCompatActivity {
         String timeLeftText;
         timeLeftText = "";
         timeLeftText += seconds;
-        txtVelocidad.setText(timeLeftText);
+        if(isGameOver == false) {
+            txtTimer.setText(timeLeftText);
+        }
         //timerRunning=false;
     }
 

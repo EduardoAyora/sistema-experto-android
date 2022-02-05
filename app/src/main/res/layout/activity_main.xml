@@ -18,8 +18,8 @@
 
     <TextView
         android:id="@+id/valorDefusificado"
-        android:layout_width="217dp"
-        android:layout_height="40dp"
+        android:layout_width="187dp"
+        android:layout_height="23dp"
         android:layout_marginTop="20dp"
         android:text="Salida es"
         app:layout_constraintEnd_toEndOf="parent"
@@ -50,5 +50,29 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtDireccionPedida" />
+
+    <TextView
+        android:id="@+id/txtTimer"
+        android:layout_width="175dp"
+        android:layout_height="43dp"
+        android:layout_marginTop="80dp"
+        android:text="Segundos"
+        android:textAlignment="center"
+        android:textSize="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtGameOver"
+        android:layout_width="272dp"
+        android:layout_height="107dp"
+        android:layout_marginBottom="60dp"
+        android:text="Tu puntuación fué:"
+        android:textAlignment="center"
+        android:textSize="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/txtDireccionPedida"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
