@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private float[] floatRotationMatrix = new float[9];
 
     private int seconds;
-    private long timeLeftInMilliseconds = 16000;
+    private long timeLeftInMilliseconds = 61000;
     private CountDownTimer conCountDownTimer;
     RequestQueue MyRequestQueue;
 
@@ -221,13 +221,13 @@ public class MainActivity extends AppCompatActivity {
                 if(isOver == false) {
                     isGameOver = true;
                     txtGameOver.setText("Tu puntuación fué: " + puntos);
-                    timeLeftInMilliseconds = 8000;
+                    timeLeftInMilliseconds = 16000;
                     startTimer();
                 }
                 else {
                     isGameOver = false;
                     txtGameOver.setText("");
-                    timeLeftInMilliseconds = 16000;
+                    timeLeftInMilliseconds = 61000;
                     direccionPedida = getRandomDirection();
                     txtDireccionPedida.setText("Apunta al " + direccionPedida);
                     puntos = 0;
